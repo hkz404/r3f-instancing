@@ -1,35 +1,98 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Suspense } from "react";
+import "./App.css";
+import { Canvas } from "@react-three/fiber";
+import {
+  Center,
+  ContactShadows,
+  Environment,
+  GizmoHelper,
+  GizmoViewport,
+  Grid,
+  Lightformer,
+  Loader,
+  MeshReflectorMaterial,
+  OrbitControls,
+} from "@react-three/drei";
+import { Perf } from "r3f-perf";
+import {
+  Bloom,
+  BrightnessContrast,
+  DepthOfField,
+  EffectComposer,
+  HueSaturation,
+  N8AO,
+  TiltShift2,
+  ToneMapping,
+  WaterEffect,
+} from "@react-three/postprocessing";
+import Boxes from "./components/boxes";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+const App = () => {
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      <Suspense>
+        <Canvas camera={{ position: [-8, 32, 40], fov: 45 }}>
+          {/* <ambientLight intensity={2} /> */}
+          <directionalLight position={[0, 5, 0]} intensity={4} />
+          <Environment files='/sunset.hdr' environmentIntensity={1} />
 
-export default App
+          <Center top>
+            <Boxes />
+          </Center>
+
+          <Grid
+            renderOrder={-1}
+            position={[0, 0, 0]}
+            infiniteGrid
+            cellSize={0.6}
+            cellThickness={0.6}
+            sectionSize={3.3}
+            sectionThickness={1.5}
+            sectionColor='#181818'
+            fadeDistance={60}
+          />
+
+          <OrbitControls makeDefault enabled={true} />
+
+          <Perf position='top-left' />
+
+          {/* 放在最后才会生效 */}
+          <EffectComposer>
+            {/* <DepthOfField
+              target={[0, 0, 0]}
+              focalLength={0.3}
+              bokehScale={15}
+              height={100}
+            /> */}
+            {/* <HueSaturation saturation={-0.1} /> */}
+            {/* <BrightnessContrast brightness={0} contrast={0.1} /> */}
+            {/* <WaterEffect factor={0.75} /> */}
+            {/* <TiltShift2 samples={16} blur={0.9} /> */}
+            {/* <Bloom
+              // 开启 mipmapBlur 才有下面的属性
+              mipmapBlur
+              levels={5}
+              radius={0.9}
+              // 其他配置
+              luminanceThreshold={0.1}
+              luminanceSmoothing={0.8}
+              intensity={0.5}
+            /> */}
+            {/* <ToneMapping /> */}
+            <N8AO distanceFalloff={1} aoRadius={2} intensity={1} />
+          </EffectComposer>
+
+          {/* <GizmoHelper alignment='bottom-right' margin={[80, 80]}>
+            <GizmoViewport
+              axisColors={["#9d4b4b", "#2f7f4f", "#3b5b9d"]}
+              labelColor='white'
+            />
+          </GizmoHelper> */}
+        </Canvas>
+      </Suspense>
+      <Loader />
+    </>
+  );
+};
+
+export default App;
