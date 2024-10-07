@@ -19,7 +19,7 @@ const App = () => {
         <Canvas camera={{ position: [-8, 32, 40], fov: 45 }}>
           {/* <ambientLight intensity={2} /> */}
           <directionalLight position={[0, 5, 0]} intensity={4} />
-          <Environment files='/sunset.hdr' environmentIntensity={1} />
+          <Environment files='./sunset.hdr' environmentIntensity={1} />
 
           <Center top>
             <Boxes />
