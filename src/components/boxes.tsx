@@ -16,7 +16,7 @@ declare global {
 const tempObject = new THREE.Object3D();
 const tempVector2 = new THREE.Vector2();
 
-const vertexShader = `
+const vertexShader = /*glsl*/ `
   varying vec2 vUv;
 
   void main() {
@@ -31,7 +31,7 @@ const vertexShader = `
   }
 `;
 
-const fragmentShader = `
+const fragmentShader = /*glsl*/ `
   varying vec2 vUv;
   uniform float uTime;
   uniform vec2 uUv;
@@ -39,6 +39,8 @@ const fragmentShader = `
   void main() {
     // gl_FragColor = vec4(uUv.x, 1.-uUv.y, sin(uTime), 1.);
     gl_FragColor = vec4(0.5 + 0.5*cos(uTime+uUv.xyx+vec3(0,2,4)), 1.);
+    #include <tonemapping_fragment>
+    // #include <encodings_fragment>
   }
 `;
 
@@ -59,7 +61,7 @@ const material = new THREE.ShaderMaterial({
   fragmentShader: fragmentShader,
 });
 
-const material2 = new THREE.MeshStandardMaterial({ color: "lightgreen" });
+// const material2 = new THREE.MeshStandardMaterial({ color: "lightgreen" });
 
 const Boxes = () => {
   const meshRef = useRef<any>();
@@ -94,7 +96,7 @@ const Boxes = () => {
   return (
     <instancedUniformsMesh
       ref={meshRef}
-      args={[geometry, material2, resolution * resolution]}
+      args={[geometry, material, resolution * resolution]}
     />
   );
 };
