@@ -1,7 +1,9 @@
 import { useFrame } from "@react-three/fiber";
+import { damp } from "maath/easing";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
 
+const tmpScale = {} as any;
 const tempColor = new THREE.Color();
 const tempObject = new THREE.Object3D();
 const tempVector2 = new THREE.Vector2();
@@ -25,7 +27,7 @@ const MatGrid = (props: any) => {
     [data, resolution]
   );
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     if (!meshRef.current) return;
 
     let i = 0;
@@ -37,13 +39,16 @@ const MatGrid = (props: any) => {
         tempObject.position.set(-resolution / 2 + x, 0, -resolution / 2 + z);
 
         if (imgData) {
-          const heightScale = (((255 - imgData[j]) / 255) * resolution) / 30;
-          tempObject.scale.setY(Math.max(heightScale, 0.1));
+          const heightScale = ((1 - imgData[j] / 255) * resolution) / 30;
+          damp(tmpScale, `id_${id}`, heightScale, 0.25, delta);
+          tempObject.scale.setY(Math.max(tmpScale[`id_${id}`], 0.05));
 
           if (imgData[j] < 255) {
             tempColor.set("#ff4060").toArray(colorArray, id * 3);
             meshRef.current.geometry.attributes.color.needsUpdate = true;
           }
+        } else {
+          tmpScale[`id_${id}`] = tmpScale[`id_${id}`] || 1;
         }
 
         j += 4;
