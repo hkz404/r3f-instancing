@@ -1,30 +1,15 @@
-import { Suspense } from "react";
-import "./App.css";
-import { Canvas } from "@react-three/fiber";
 import {
   Center,
-  ContactShadows,
   Environment,
-  GizmoHelper,
-  GizmoViewport,
   Grid,
-  Lightformer,
   Loader,
-  MeshReflectorMaterial,
   OrbitControls,
 } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
+import { EffectComposer, N8AO } from "@react-three/postprocessing";
 import { Perf } from "r3f-perf";
-import {
-  Bloom,
-  BrightnessContrast,
-  DepthOfField,
-  EffectComposer,
-  HueSaturation,
-  N8AO,
-  TiltShift2,
-  ToneMapping,
-  WaterEffect,
-} from "@react-three/postprocessing";
+import { Suspense } from "react";
+import "./App.css";
 import Boxes from "./components/boxes";
 
 const App = () => {
@@ -56,7 +41,6 @@ const App = () => {
 
           <Perf position='top-left' />
 
-          {/* 放在最后才会生效 */}
           <EffectComposer>
             {/* <DepthOfField
               target={[0, 0, 0]}
@@ -69,11 +53,9 @@ const App = () => {
             {/* <WaterEffect factor={0.75} /> */}
             {/* <TiltShift2 samples={16} blur={0.9} /> */}
             {/* <Bloom
-              // 开启 mipmapBlur 才有下面的属性
               mipmapBlur
               levels={5}
               radius={0.9}
-              // 其他配置
               luminanceThreshold={0.1}
               luminanceSmoothing={0.8}
               intensity={0.5}
