@@ -1,10 +1,4 @@
-import {
-  Center,
-  Environment,
-  Grid,
-  Loader,
-  OrbitControls,
-} from "@react-three/drei";
+import { Center, Grid, Loader, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { EffectComposer, N8AO } from "@react-three/postprocessing";
 import { Perf } from "r3f-perf";
@@ -18,7 +12,7 @@ const App = () => {
       <Suspense>
         <Canvas camera={{ position: [-8, 32, 40], fov: 45 }}>
           <directionalLight position={[0, 5, 0]} intensity={4} />
-          <Environment files='./sunset.hdr' environmentIntensity={1} />
+          {/* <Environment files='./sunset.hdr' environmentIntensity={1} /> */}
 
           <Center top>
             <Boxes />
