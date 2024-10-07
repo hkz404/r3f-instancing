@@ -1,6 +1,13 @@
-import { Center, Grid, Loader, OrbitControls } from "@react-three/drei";
+import {
+  Center,
+  Environment,
+  Grid,
+  Loader,
+  OrbitControls,
+} from "@react-three/drei";
+
 import { Canvas } from "@react-three/fiber";
-import { EffectComposer, N8AO } from "@react-three/postprocessing";
+import { EffectComposer, N8AO, ToneMapping } from "@react-three/postprocessing";
 import { Perf } from "r3f-perf";
 import { Suspense } from "react";
 import "./App.css";
@@ -12,7 +19,7 @@ const App = () => {
       <Suspense>
         <Canvas camera={{ position: [-8, 32, 40], fov: 45 }}>
           <directionalLight position={[0, 5, 0]} intensity={4} />
-          {/* <Environment files='./sunset.hdr' environmentIntensity={1} /> */}
+          <Environment files='./sunset.hdr' environmentIntensity={1} />
 
           <Center top>
             <Boxes />
@@ -27,18 +34,24 @@ const App = () => {
             sectionSize={3.3}
             sectionThickness={1.5}
             sectionColor='#181818'
-            fadeDistance={60}
+            fadeDistance={1000}
           />
 
-          <OrbitControls makeDefault enabled={true} />
+          <OrbitControls
+            makeDefault
+            enabled={true}
+            maxPolarAngle={Math.PI / 3}
+            minDistance={20}
+            maxDistance={180}
+          />
 
           <Perf position='top-left' />
 
           <EffectComposer>
             {/* <DepthOfField
               target={[0, 0, 0]}
-              focalLength={0.3}
-              bokehScale={15}
+              focalLength={0.2}
+              bokehScale={10}
               height={100}
             /> */}
             {/* <HueSaturation saturation={-0.1} /> */}
@@ -48,12 +61,11 @@ const App = () => {
             {/* <Bloom
               mipmapBlur
               levels={5}
-              radius={0.9}
-              luminanceThreshold={0.1}
-              luminanceSmoothing={0.8}
               intensity={0.5}
+              luminanceThreshold={0.5}
+              luminanceSmoothing={0.5}
             /> */}
-            {/* <ToneMapping /> */}
+            <ToneMapping />
             <N8AO distanceFalloff={1} aoRadius={2} intensity={1} />
           </EffectComposer>
 
