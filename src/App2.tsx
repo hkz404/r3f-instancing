@@ -6,11 +6,11 @@ import {
   OrbitControls,
 } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { EffectComposer, N8AO, ToneMapping } from "@react-three/postprocessing";
+import { EffectComposer, N8AO } from "@react-three/postprocessing";
 import { useControls } from "leva";
 import { Perf } from "r3f-perf";
 import { Suspense, useEffect, useRef, useState } from "react";
-import MatGrid from "./components/MatGrid";
+import ShaderGrid from "./components/ShaderGrid";
 
 const App = () => {
   const charRef = useRef<string>("");
@@ -102,7 +102,7 @@ const App = () => {
           <Environment files='./sunset.hdr' environmentIntensity={1} />
 
           <Center top>
-            <MatGrid resolution={resolution} imgData={imgData} />
+            <ShaderGrid resolution={resolution} imgData={imgData} />
           </Center>
 
           <Grid
@@ -133,7 +133,7 @@ const App = () => {
               luminanceThreshold={0.5}
               luminanceSmoothing={0.5}
             /> */}
-            <ToneMapping />
+            {/* <ToneMapping /> */}
             <N8AO distanceFalloff={1} aoRadius={2} intensity={1} />
           </EffectComposer>
 

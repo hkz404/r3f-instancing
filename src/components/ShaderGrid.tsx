@@ -1,6 +1,5 @@
 import { extend, Object3DNode, useFrame } from "@react-three/fiber";
-import { useControls } from "leva";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { InstancedUniformsMesh } from "three-instanced-uniforms-mesh";
 extend({ InstancedUniformsMesh });
@@ -54,6 +53,7 @@ const uniforms = {
 };
 
 const geometry = new THREE.BoxGeometry(0.88, 2, 0.88);
+
 const material = new THREE.ShaderMaterial({
   uniforms,
   side: THREE.FrontSide,
@@ -61,17 +61,13 @@ const material = new THREE.ShaderMaterial({
   fragmentShader: fragmentShader,
 });
 
-// const material2 = new THREE.MeshStandardMaterial({ color: "lightgreen" });
-
-const Boxes = () => {
+const ShaderGrid = (props: any) => {
   const meshRef = useRef<any>();
+  const { resolution, imgData } = props;
 
-  const { resolution } = useControls({
-    resolution: {
-      value: 30,
-      options: [10, 20, 30, 40, 50, 60, 70, 80, 100],
-    },
-  });
+  useEffect(() => {
+    console.log(imgData);
+  }, [imgData]);
 
   useFrame((state) => {
     if (!meshRef.current) return;
@@ -79,12 +75,19 @@ const Boxes = () => {
     uniforms.uTime.value = time;
 
     let i = 0;
-    for (let x = 0; x < resolution; x++) {
-      for (let z = 0; z < resolution; z++) {
+    let j = 0;
+    for (let z = 0; z < resolution; z++) {
+      for (let x = 0; x < resolution; x++) {
         const id = i++;
         tempVector2.set(x / resolution, z / resolution);
         tempObject.position.set(-resolution / 2 + x, 0, -resolution / 2 + z);
-        // tempObject.scale.set(1, (x + z) / resolution, 1);
+
+        if (imgData) {
+          const heightScale = (((255 - imgData[j]) / 255) * resolution) / 30;
+          tempObject.scale.setY(Math.max(heightScale, 0.1));
+        }
+
+        j += 4;
         tempObject.updateMatrix();
         meshRef.current.setMatrixAt(id, tempObject.matrix);
         meshRef.current.setUniformAt("uUv", id, tempVector2);
@@ -101,4 +104,4 @@ const Boxes = () => {
   );
 };
 
-export default Boxes;
+export default ShaderGrid;
