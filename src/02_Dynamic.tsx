@@ -1,5 +1,4 @@
 import {
-  Center,
   Environment,
   Grid,
   Loader,
@@ -10,15 +9,10 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { EffectComposer, N8AO } from "@react-three/postprocessing";
 import { useControls } from "leva";
 import { Perf } from "r3f-perf";
-import { Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import ShaderGrid from "./components/ShaderGrid";
 
 const App = () => {
-  const charRef = useRef<string>("");
-  const [preview, setPreview] = useState<string>("");
-  const [downsample, setDownsample] = useState<string>("");
-  const [imgData, setImgData] = useState<Uint8ClampedArray>();
-
   const { resolution } = useControls({
     resolution: {
       value: 30,
@@ -26,89 +20,18 @@ const App = () => {
     },
   });
 
-  const chooseChar = (char: string) => {
-    charRef.current = char;
-    const offCanvas = document.createElement("canvas");
-    offCanvas.width = offCanvas.height = 500;
-    const offCtx = offCanvas.getContext("2d")!;
-    offCtx.fillStyle = "white";
-    offCtx.fillRect(0, 0, 500, 500);
-    offCtx.font = "bold 400px Noto Sans TC";
-    offCtx.fillStyle = "black";
-    offCtx.textAlign = "center";
-    offCtx.fillText(char, 250, 410, 500);
-    const preview = offCanvas.toDataURL();
-    setPreview(preview);
-
-    const offCanvas2 = document.createElement("canvas");
-    offCanvas2.width = resolution;
-    offCanvas2.height = resolution;
-    const offCtx2 = offCanvas2.getContext("2d")!;
-    offCtx2.fillStyle = "white";
-    offCtx2.fillRect(0, 0, 500, 500);
-    offCtx2.imageSmoothingEnabled = true;
-    offCtx2.drawImage(
-      offCanvas,
-      0,
-      0,
-      offCanvas.width,
-      offCanvas.height,
-      0,
-      0,
-      offCanvas2.width,
-      offCanvas2.height
-    );
-    const preview2 = offCanvas2.toDataURL();
-    setDownsample(preview2);
-
-    setImgData(offCtx2.getImageData(0, 0, resolution, resolution).data);
-  };
-
-  useEffect(() => {
-    if (!charRef.current) return;
-    chooseChar(charRef.current);
-  }, [resolution]);
-
   return (
     <>
       <Suspense>
-        <div className='ui-panel'>
-          <h2>Choose a charactor : </h2>
-          <ul>
-            <li onClick={() => chooseChar("G")}>G</li>
-            <li onClick={() => chooseChar("中")}>中</li>
-            <li onClick={() => chooseChar("あ")}>あ</li>
-            <li onClick={() => chooseChar("한")}>한</li>
-          </ul>
-
-          {preview ? (
-            <div className='flow'>
-              <div className='item'>
-                <h3>Texture preview : </h3>
-                <img src={preview} alt='' width='100px' />
-              </div>
-              <div className='item'>
-                <span className='arrow'>→</span>
-              </div>
-              <div className='item'>
-                <h3>Downsampling : </h3>
-                <img src={downsample} alt='' width='100px' />
-              </div>
-            </div>
-          ) : null}
-        </div>
-
         <Canvas dpr={[1, 2]} camera={{ position: [-8, 32, 40], fov: 45 }}>
           <directionalLight position={[0, 5, 0]} intensity={4} />
           <Environment files='./sunset.hdr' environmentIntensity={1} />
 
-          <Center top>
-            <ShaderGrid resolution={resolution} imgData={imgData} />
-          </Center>
+          <ShaderGrid resolution={resolution} />
 
           <Grid
             renderOrder={-1}
-            position={[0, 0, 0]}
+            position={[0, -2, 0]}
             infiniteGrid
             cellSize={0.6}
             cellThickness={0.6}

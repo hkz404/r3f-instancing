@@ -59,12 +59,15 @@ html {
 }
 
 .ui-panel ul li {
-  padding: 6px 0;
-  width: 40px;
+  padding: 6px 10px;
   cursor: pointer;
-  text-align: center;
+  min-width: 40px;
   font-size: 20px;
   border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: rgba(0, 0, 0, 0.4);
 }
 
@@ -84,4 +87,35 @@ html {
   font-size: 20px;
   position: relative;
   top: 26px;
+}
+
+.navbar {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  margin: 0 auto;
+  width: 400px;
+  border-radius: 100px;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.navbar {
+  display: flex;
+  gap: 20px;
+  padding: 10px 0 12px;
+  justify-content: center;
+}
+
+.navbar a {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-weight: 700;
+  font-family: "Noto Sans TC", sans-serif;
+}
+
+.navbar a.cur {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: underline;
 }
