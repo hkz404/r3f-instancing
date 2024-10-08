@@ -1,10 +1,10 @@
 import { StrictMode, Suspense, lazy } from "react";
 import { createRoot } from "react-dom/client";
 import { Link, Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import App from "./App.tsx";
 import "./index.css";
 
-const App2 = lazy(() => import("./App2"));
+import Static from "./01_Static.tsx";
+const Dynamic = lazy(() => import("./02_Dynamic.tsx"));
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -20,21 +20,21 @@ createRoot(document.getElementById("root")!).render(
       >
         <ul>
           <li>
-            <Link to='/'>Home</Link>
+            <Link to='/'>Static</Link>
           </li>
           <li>
-            <Link to='/demo2'>About</Link>
+            <Link to='/dynamic'>Dynamic</Link>
           </li>
         </ul>
       </nav>
 
       <Routes>
-        <Route path='/' element={<App />} />
+        <Route path='/' element={<Static />} />
         <Route
-          path='/demo2'
+          path='/dynamic'
           element={
             <Suspense fallback={<div>Loading...</div>}>
-              <App2 />
+              <Dynamic />
             </Suspense>
           }
         />

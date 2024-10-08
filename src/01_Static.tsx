@@ -4,8 +4,9 @@ import {
   Grid,
   Loader,
   OrbitControls,
+  PerformanceMonitor,
 } from "@react-three/drei";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { EffectComposer, N8AO, ToneMapping } from "@react-three/postprocessing";
 import { useControls } from "leva";
 import { Perf } from "r3f-perf";
@@ -83,21 +84,21 @@ const App = () => {
           {preview ? (
             <div className='flow'>
               <div className='item'>
-                <h3>Texture preview : </h3>
+                <h3>Texture preview :</h3>
                 <img src={preview} alt='' width='100px' />
               </div>
               <div className='item'>
                 <span className='arrow'>→</span>
               </div>
               <div className='item'>
-                <h3>Downsampling : </h3>
+                <h3>Downsampling :</h3>
                 <img src={downsample} alt='' width='100px' />
               </div>
             </div>
           ) : null}
         </div>
 
-        <Canvas camera={{ position: [-8, 32, 40], fov: 45 }}>
+        <Canvas dpr={[1, 2]} camera={{ position: [-8, 32, 40], fov: 45 }}>
           <directionalLight position={[0, 5, 0]} intensity={4} />
           <Environment files='./sunset.hdr' environmentIntensity={1} />
 
@@ -125,6 +126,8 @@ const App = () => {
             maxDistance={180}
           />
 
+          <Monitor />
+
           <EffectComposer>
             {/* <Bloom
               mipmapBlur
@@ -143,6 +146,19 @@ const App = () => {
       <Loader />
     </>
   );
+};
+
+const Monitor = () => {
+  const state = useThree();
+  const [degraded, degrade] = useState(false);
+
+  useEffect(() => {
+    if (!degraded) return;
+    console.log("degrade!");
+    state.setDpr(1);
+  }, [degraded]);
+
+  return <PerformanceMonitor onDecline={() => degrade(true)} />;
 };
 
 export default App;

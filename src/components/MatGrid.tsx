@@ -59,6 +59,7 @@ const MatGrid = (props: any) => {
 
     meshRef.current.instanceMatrix.needsUpdate = true;
   });
+
   return (
     <instancedMesh
       ref={meshRef}
