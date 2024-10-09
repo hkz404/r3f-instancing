@@ -89,6 +89,22 @@ html {
   top: 26px;
 }
 
+.play-btn {
+  position: absolute;
+  left: 100px;
+  right: 100px;
+  top: 100px;
+  bottom: 100px;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.play-btn img {
+  cursor: pointer;
+}
+
 .navbar {
   position: absolute;
   top: 20px;

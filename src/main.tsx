@@ -1,16 +1,8 @@
-import { StrictMode, Suspense, lazy } from "react";
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import {
-  Link,
-  Route,
-  BrowserRouter as Router,
-  Routes,
-  useLocation,
-} from "react-router-dom";
+import { Link, BrowserRouter as Router, useLocation } from "react-router-dom";
+import App from "./App.tsx";
 import "./index.css";
-
-import Static from "./01_Static.tsx";
-const Dynamic = lazy(() => import("./02_Dynamic.tsx"));
 
 const NavLink = ({ to, children }: any) => {
   const location = useLocation();
@@ -28,26 +20,34 @@ createRoot(document.getElementById("root")!).render(
     <Router basename='/r3f-instancing/'>
       <nav className='navbar'>
         <NavLink to='/'>Static</NavLink>
-        <NavLink to='/dynamic'>Dynamic</NavLink>
+        <NavLink to='/video'>Video</NavLink>
         <NavLink to='/audio'>Audio</NavLink>
         <NavLink to='/terrain'>Terrain</NavLink>
         <NavLink to='/grass'>Grass</NavLink>
       </nav>
 
-      <Routes>
+      <App />
+      {/* <Routes>
         <Route path='/' element={<Static />} />
         <Route
-          path='/dynamic'
+          path='/video'
           element={
             <Suspense fallback={<div>Loading...</div>}>
-              <Dynamic />
+              <Video />
             </Suspense>
           }
         />
-        <Route path='/audio' element={<Static />} />
+        <Route
+          path='/audio'
+          element={
+            <Suspense fallback={<div>Loading...</div>}>
+              <Audio />
+            </Suspense>
+          }
+        />
         <Route path='/terrain' element={<Static />} />
         <Route path='/grass' element={<Static />} />
-      </Routes>
+      </Routes> */}
     </Router>
   </StrictMode>
 );

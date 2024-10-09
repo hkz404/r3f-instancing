@@ -7,17 +7,21 @@ import {
   PerformanceMonitor,
 } from "@react-three/drei";
 import { Canvas, useThree } from "@react-three/fiber";
-import { EffectComposer, N8AO, ToneMapping } from "@react-three/postprocessing";
+import { EffectComposer, N8AO } from "@react-three/postprocessing";
 import { useControls } from "leva";
 import { Perf } from "r3f-perf";
 import { Suspense, useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
+import AudioGrid from "./components/AudioGrid";
 import MatGrid from "./components/MatGrid";
+import VideoGrid from "./components/VideoGrid";
 
 const App = () => {
   const charRef = useRef<string>("");
   const [preview, setPreview] = useState<string>("");
   const [downsample, setDownsample] = useState<string>("");
   const [imgData, setImgData] = useState<Uint8ClampedArray>();
+  const [audioCtrl, showAudioCtrl] = useState<boolean>(false);
 
   const { resolution } = useControls({
     resolution: {
@@ -25,6 +29,8 @@ const App = () => {
       options: [10, 20, 30, 40, 50, 60, 70, 80, 100],
     },
   });
+
+  const location = useLocation();
 
   const chooseChar = (char: string) => {
     charRef.current = char;
@@ -72,39 +78,77 @@ const App = () => {
   return (
     <>
       <Suspense>
-        <div className='ui-panel'>
-          <h2>Choose a charactor : </h2>
-          <ul>
-            <li onClick={() => chooseChar("G")}>G</li>
-            <li onClick={() => chooseChar("中")}>中</li>
-            <li onClick={() => chooseChar("あ")}>あ</li>
-            <li onClick={() => chooseChar("한")}>한</li>
-          </ul>
+        {location.pathname === "/" ? (
+          <div className='ui-panel'>
+            <h2>Choose a charactor : </h2>
+            <ul>
+              <li onClick={() => chooseChar("M")}>M</li>
+              <li onClick={() => chooseChar("中")}>中</li>
+              <li onClick={() => chooseChar("あ")}>あ</li>
+              <li onClick={() => chooseChar("한")}>한</li>
+            </ul>
 
-          {preview ? (
-            <div className='flow'>
-              <div className='item'>
-                <h3>Texture preview :</h3>
-                <img src={preview} alt='' width='100px' />
+            {preview ? (
+              <div className='flow'>
+                <div className='item'>
+                  <h3>Texture preview :</h3>
+                  <img src={preview} alt='' width='100px' />
+                </div>
+                <div className='item'>
+                  <span className='arrow'>→</span>
+                </div>
+                <div className='item'>
+                  <h3>Downsampling :</h3>
+                  <img src={downsample} alt='' width='100px' />
+                </div>
               </div>
-              <div className='item'>
-                <span className='arrow'>→</span>
-              </div>
-              <div className='item'>
-                <h3>Downsampling :</h3>
-                <img src={downsample} alt='' width='100px' />
-              </div>
-            </div>
-          ) : null}
-        </div>
+            ) : null}
+          </div>
+        ) : null}
 
-        <Canvas dpr={[1, 2]} camera={{ position: [-8, 32, 40], fov: 45 }}>
-          <directionalLight position={[0, 5, 0]} intensity={4} />
+        {location.pathname === "/audio" ? (
+          <>
+            {/* <div className='ui-panel'>
+              <audio
+                src='/r3f-instancing/shadertoy.mp3'
+                autoPlay={false}
+                controls
+                id='audioSource'
+              />
+            </div> */}
+
+            {!audioCtrl ? (
+              <div className='play-btn'>
+                <img
+                  src='/r3f-instancing/play.svg'
+                  alt=''
+                  width='100px'
+                  onClick={() => {
+                    showAudioCtrl(true);
+                  }}
+                />
+              </div>
+            ) : null}
+          </>
+        ) : null}
+
+        <Canvas dpr={[1, 2]} camera={{ position: [-22, 30, 45], fov: 45 }}>
+          <directionalLight position={[0, 5, 0]} intensity={1} />
           <Environment files='./sunset.hdr' environmentIntensity={1} />
 
-          <Center top>
-            <MatGrid resolution={resolution} imgData={imgData} />
-          </Center>
+          {location.pathname === "/" ? (
+            <Center top>
+              <MatGrid resolution={resolution} imgData={imgData} />
+            </Center>
+          ) : null}
+
+          {location.pathname === "/video" ? (
+            <VideoGrid resolution={resolution} position={[0, 2.5, 0]} />
+          ) : null}
+
+          {location.pathname === "/audio" && audioCtrl ? (
+            <AudioGrid resolution={resolution} position={[0, 2.5, 0]} />
+          ) : null}
 
           <Grid
             renderOrder={-1}
@@ -129,14 +173,7 @@ const App = () => {
           <Monitor />
 
           <EffectComposer>
-            {/* <Bloom
-              mipmapBlur
-              levels={5}
-              intensity={0.5}
-              luminanceThreshold={0.5}
-              luminanceSmoothing={0.5}
-            /> */}
-            <ToneMapping />
+            {/* <ToneMapping /> */}
             <N8AO distanceFalloff={1} aoRadius={2} intensity={1} />
           </EffectComposer>
 
