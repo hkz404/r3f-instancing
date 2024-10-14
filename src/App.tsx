@@ -23,14 +23,14 @@ const App = () => {
   const [imgData, setImgData] = useState<Uint8ClampedArray>();
   const [audioCtrl, showAudioCtrl] = useState<boolean>(false);
 
+  const location = useLocation();
+
   const { resolution } = useControls({
     resolution: {
       value: 30,
       options: [10, 20, 30, 40, 50, 60, 70, 80, 100],
     },
   });
-
-  const location = useLocation();
 
   const chooseChar = (char: string) => {
     charRef.current = char;
@@ -106,30 +106,17 @@ const App = () => {
           </div>
         ) : null}
 
-        {location.pathname === "/audio" ? (
-          <>
-            {/* <div className='ui-panel'>
-              <audio
-                src='/r3f-instancing/shadertoy.mp3'
-                autoPlay={false}
-                controls
-                id='audioSource'
-              />
-            </div> */}
-
-            {!audioCtrl ? (
-              <div className='play-btn'>
-                <img
-                  src='/r3f-instancing/play.svg'
-                  alt=''
-                  width='100px'
-                  onClick={() => {
-                    showAudioCtrl(true);
-                  }}
-                />
-              </div>
-            ) : null}
-          </>
+        {location.pathname === "/audio" && !audioCtrl ? (
+          <div className='play-btn'>
+            <img
+              src='/r3f-instancing/play.svg'
+              alt=''
+              width='100px'
+              onClick={() => {
+                showAudioCtrl(true);
+              }}
+            />
+          </div>
         ) : null}
 
         <Canvas dpr={[1, 2]} camera={{ position: [-22, 30, 45], fov: 45 }}>
@@ -170,7 +157,7 @@ const App = () => {
             maxDistance={180}
           />
 
-          <Monitor />
+          <Performance />
 
           <EffectComposer>
             {/* <ToneMapping /> */}
@@ -185,7 +172,7 @@ const App = () => {
   );
 };
 
-const Monitor = () => {
+const Performance = () => {
   const state = useThree();
   const [degraded, degrade] = useState(false);
 

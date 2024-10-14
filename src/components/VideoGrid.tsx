@@ -80,21 +80,21 @@ const material = new THREE.ShaderMaterial({
 
 const ShaderGrid = (props: any) => {
   const meshRef = useRef<any>();
+  const vTexRef = useRef<any>();
   const { resolution, position } = props;
 
   const VideoMaterial = ({ src }: any) => {
-    const texture = useVideoTexture(src);
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    uniforms.uTex.value = texture;
+    vTexRef.current = useVideoTexture(src);
+    vTexRef.current.wrapS = THREE.RepeatWrapping;
+    vTexRef.current.wrapT = THREE.RepeatWrapping;
+    uniforms.uTex.value = vTexRef.current;
 
     return (
       <meshStandardMaterial
         side={THREE.FrontSide}
-        map={texture}
-        toneMapped={false}
+        map={vTexRef.current}
         transparent
-        opacity={0.4}
+        opacity={0.5}
       />
     );
   };
@@ -122,8 +122,8 @@ const ShaderGrid = (props: any) => {
   return (
     <>
       <mesh
-        position={[-resolution / 2 - 7 + position[0], position[1], position[2]]}
         rotation={[-Math.PI / 2, 0, 0]}
+        position={[-resolution / 2 - 7 + position[0], position[1], position[2]]}
       >
         <planeGeometry args={[8, 8]} />
         <VideoMaterial src='/r3f-instancing/kunkun.mp4' />

@@ -7,7 +7,6 @@ import "./index.css";
 const NavLink = ({ to, children }: any) => {
   const location = useLocation();
   const isActive = location.pathname === to;
-
   return (
     <Link to={to} className={isActive ? "cur" : ""}>
       {children}
@@ -27,27 +26,6 @@ createRoot(document.getElementById("root")!).render(
       </nav>
 
       <App />
-      {/* <Routes>
-        <Route path='/' element={<Static />} />
-        <Route
-          path='/video'
-          element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <Video />
-            </Suspense>
-          }
-        />
-        <Route
-          path='/audio'
-          element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <Audio />
-            </Suspense>
-          }
-        />
-        <Route path='/terrain' element={<Static />} />
-        <Route path='/grass' element={<Static />} />
-      </Routes> */}
     </Router>
   </StrictMode>
 );

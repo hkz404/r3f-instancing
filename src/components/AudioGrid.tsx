@@ -1,5 +1,5 @@
 import { extend, Object3DNode, useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { InstancedUniformsMesh } from "three-instanced-uniforms-mesh";
 import { useAudioTexture } from "../hooks/useAudioTexture";
@@ -112,7 +112,7 @@ const geometry = new THREE.BoxGeometry(0.88, 2, 0.88);
 
 const material = new THREE.ShaderMaterial({
   uniforms,
-  // side: THREE.FrontSide,
+  side: THREE.FrontSide,
   vertexShader: vertexShader,
   fragmentShader: fragmentShader,
 });
@@ -123,6 +123,12 @@ const AudioGrid = (props: any) => {
 
   const { texture } = useAudioTexture({ width: 512, height: 512 });
   material.uniforms.uTex.value = texture;
+
+  useEffect(() => {
+    return () => {
+      material.uniforms.uTex.value = null!;
+    };
+  }, []);
 
   useFrame((state) => {
     if (!meshRef.current) return;
@@ -148,8 +154,8 @@ const AudioGrid = (props: any) => {
   return (
     <>
       <mesh
-        position={[-resolution / 2 - 7 + position[0], position[1], position[2]]}
         rotation={[-Math.PI / 2, 0, 0]}
+        position={[-resolution / 2 - 7 + position[0], position[1], position[2]]}
       >
         <planeGeometry args={[8, 8]} />
         <meshBasicMaterial map={texture} />

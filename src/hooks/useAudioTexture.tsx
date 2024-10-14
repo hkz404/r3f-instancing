@@ -1,5 +1,5 @@
 import { useFrame } from "@react-three/fiber";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { EffectComposer, ShaderPass } from "three-stdlib";
 
@@ -160,14 +160,36 @@ class AudioTexture {
     this.composer.render();
     this.texture.needsUpdate = true;
   }
+
+  dispose() {
+    this.audio.currentTime = 0;
+    this.audio.pause();
+    this.audio.src = "";
+    this.analyserNode = null!;
+    this.domain = null!;
+    this.frequency = null!;
+    this.texture.dispose();
+    this.material.dispose();
+    this.composer.dispose();
+    this.audio.remove();
+    this.canvas.remove();
+  }
 }
 
 export function useAudioTexture(config: any) {
   const audioTex = useMemo(() => new AudioTexture(config), [config]);
 
   useFrame((state) => {
-    if (audioTex) audioTex.update(state.clock.getElapsedTime());
+    if (audioTex) {
+      audioTex.update(state.clock.getElapsedTime());
+    }
   });
+
+  useEffect(() => {
+    return () => {
+      audioTex.dispose();
+    };
+  }, []);
 
   return { texture: audioTex.texture };
 }
