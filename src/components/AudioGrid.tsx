@@ -1,5 +1,5 @@
 import { extend, Object3DNode, useFrame } from "@react-three/fiber";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import * as THREE from "three";
 import { InstancedUniformsMesh } from "three-instanced-uniforms-mesh";
 import { useAudioTexture } from "../hooks/useAudioTexture";
@@ -30,13 +30,10 @@ const vertexShader = /*glsl*/ `
       mvPosition = instanceMatrix * mvPosition;
     #endif
 
-    // vec3 color = texture(uTex, vec2(uUv.x, 1.-uUv.y)).rgb;
+    vec3 color = texture(uTex, vec2(uUv.x, 1.-uUv.y)).rgb;
+    float gray = max(max(color.r, color.g), color.b);
+    mvPosition.y += gray * 2.;
 
-    // float contrast = 0.5;
-    // float gray = dot(color, vec3(0.299, 0.587, 0.114));
-    // gray = (1.0 + contrast) * (gray - 0.5) + 0.5;
-
-    // mvPosition.y -= gray * 2.;
     gl_Position = projectionMatrix * modelViewMatrix * mvPosition;
   }
 `;
@@ -47,65 +44,18 @@ const fragmentShader = /*glsl*/ `
   uniform float uTime;
   uniform sampler2D uTex;
 
-  vec3 mixc(vec3 col1, vec3 col2, float v) {
-    v = clamp(v, 0.0, 1.0);
-    return col1 + v * (col2 - col1);
-  }
-
   void main() {
-    vec2 uv = vec2(uUv.x, 1.-uUv.y);
-    vec2 p = uv * 2.0-1.0;
-    p.y += 1.;
-
-    vec3 col = vec3(0.0);
-
-    float nBands = 32.0;
-    float i = floor(uv.x * nBands);
-    float f = fract(uv.x * nBands);
-
-    float band = i/nBands;
-    // band *= band * band;
-    // band = band*0.995;
-    // band += 0.005;
-
-    float s = texture(uTex, vec2(band, 0.25)).x;
-
-    const int nColors = 4;
-    vec3 colors[nColors];
-    colors[0] = vec3(0.0,0.0,1.0);
-    colors[1] = vec3(0.0,1.0,1.0);
-    colors[2] = vec3(1.0,1.0,0.0);
-    colors[3] = vec3(1.0,0.0,0.0);
-
-    vec3 gradCol = colors[0];
-    float n = float(nColors)-1.0;
-    for(int i = 1; i < nColors; i++) {
-      gradCol = mixc(gradCol, colors[i], (s-float(i-1)/n)*n);
-    }
-
-    col += vec3(1.0-smoothstep(0.0,0.01,p.y-s*1.5));
-    col *= gradCol;
-
-    // col *= smoothstep(0.05,0.1,f);
-    // col *= smoothstep(0.95,0.9,f);
-
-    col = clamp(col, 0.0, 1.0);
+    vec3 col = texture(uTex, vec2(uUv.x, 1.-uUv.y)).rgb;
 
     gl_FragColor = vec4(col, 1.0);
-    // #include <tonemapping_fragment>
+    #include <tonemapping_fragment>
   }
 `;
 
 const uniforms = {
-  uTime: {
-    value: 1.0,
-  },
-  uUv: {
-    value: new THREE.Vector2(0, 0),
-  },
-  uTex: {
-    value: new THREE.Texture(),
-  },
+  uTime: { value: 1.0 },
+  uTex: { value: null },
+  uUv: { value: new THREE.Vector2(0, 0) },
 };
 
 const geometry = new THREE.BoxGeometry(0.88, 2, 0.88);
@@ -121,14 +71,12 @@ const AudioGrid = (props: any) => {
   const meshRef = useRef<any>();
   const { resolution, position } = props;
 
-  const { texture } = useAudioTexture({ width: 512, height: 512 });
+  const { texture } = useAudioTexture({
+    width: 120,
+    height: 120,
+    mp3src: "/r3f-instancing/shadertoy2.mp3",
+  });
   material.uniforms.uTex.value = texture;
-
-  useEffect(() => {
-    return () => {
-      material.uniforms.uTex.value = null!;
-    };
-  }, []);
 
   useFrame((state) => {
     if (!meshRef.current) return;
@@ -158,7 +106,7 @@ const AudioGrid = (props: any) => {
         position={[-resolution / 2 - 7 + position[0], position[1], position[2]]}
       >
         <planeGeometry args={[8, 8]} />
-        <meshBasicMaterial map={texture} />
+        {texture ? <meshBasicMaterial map={texture} /> : null}
       </mesh>
 
       <instancedUniformsMesh

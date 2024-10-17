@@ -12,7 +12,7 @@ const MatGrid = (props: any) => {
   const { resolution, imgData } = props;
 
   const data = Array.from({ length: resolution * resolution }, () => ({
-    color: "#74DCB0",
+    color: "#BEBBC2",
     scale: 1,
   }));
 
@@ -44,7 +44,7 @@ const MatGrid = (props: any) => {
           tempObject.scale.setY(Math.max(tmpScale[`id_${id}`], 0.05));
 
           if (imgData[j] < 255) {
-            tempColor.set("#F18396").toArray(colorArray, id * 3);
+            tempColor.set("#616275").toArray(colorArray, id * 3);
             meshRef.current.geometry.attributes.color.needsUpdate = true;
           }
         } else {
@@ -71,7 +71,7 @@ const MatGrid = (props: any) => {
           args={[colorArray, 3]}
         />
       </boxGeometry>
-      <meshStandardMaterial vertexColors />
+      <meshBasicMaterial vertexColors />
     </instancedMesh>
   );
 };
