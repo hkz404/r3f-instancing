@@ -194,9 +194,8 @@ export function useAudioTexture(config: any) {
   }, []);
 
   useFrame((state) => {
-    if (audioTex) {
-      audioTex.update(state.clock.getElapsedTime());
-    }
+    if (!audioTex) return;
+    audioTex.update(state.clock.getElapsedTime());
   });
 
   return { texture: audioTex?.texture };
