@@ -13,6 +13,7 @@ const vertexShader = /* glsl */ `
 `;
 
 const fragmentShader = /* glsl */ `
+  // https://www.shadertoy.com/view/4lGSzy
   precision mediump float;
   varying vec2 vUv;
   uniform float uTime;
@@ -29,7 +30,6 @@ const fragmentShader = /* glsl */ `
     p.y += 1.;
 
     vec3 col = vec3(0.);
-
     float nBands = 30.;
     float i = floor(uv.x * nBands);
     float f = fract(uv.x * nBands);
@@ -48,22 +48,17 @@ const fragmentShader = /* glsl */ `
     colors[2] = vec3(1.0,1.0,0.0);
     colors[3] = vec3(1.0,0.0,0.0);
 
-    // 默认蓝色（频率最低）
     vec3 gradCol = colors[0];
     float n = float(nColors)-1.0;
     for(int i = 1; i < nColors; i++) {
       gradCol = mixc(gradCol, colors[i], (s-float(i-1)/n)*n);
     }
 
-    // 柱子颜色
     col += vec3(1.0-smoothstep(0.0,0.01,p.y-s*1.5));
     col *= gradCol;
 
-    // 每根柱子间增加间隙
     col *= smoothstep(0.05,0.1,f);
     col *= smoothstep(0.95,0.9,f);
-
-    // 约束颜色不要超出边界
     col = clamp(col, 0.0, 1.0);
 
     gl_FragColor = vec4(col, 1.0);
